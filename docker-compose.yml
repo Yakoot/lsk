@@ -1,0 +1,9 @@
+project0:
+  image: kkarczmarczyk/node-yarn
+  volumes:
+    - ".:/opt/project0"
+  ports:
+    - "8080:8080"
+  links:
+    - project0
+  command: bash -c "cd /opt/project0 && yarn install && yarn build && yarn start"

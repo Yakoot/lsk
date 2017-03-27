@@ -28,7 +28,7 @@ import Zip from 'react-icons/lib/fa/file-archive-o';
 
 import 'lsk-admin/Admin/sass/AdminLTE.g.scss';
 
-@inject('user', 'config')
+@inject('user', 'config', 'page')
 @observer
 export default class CabinetLayout extends Component {
   static contextTypes = {
@@ -42,8 +42,8 @@ export default class CabinetLayout extends Component {
   static propTypes = {
     user: PropTypes.object.isRequired,
     config: PropTypes.object.isRequired,
-    page: PropTypes.node.isRequired,
-    children: PropTypes.node.isRequired,
+    page: PropTypes.any.isRequired,
+    children: PropTypes.any.isRequired,
     breadcrumbs: PropTypes.array,
   }
   constructor(props) {
@@ -71,11 +71,18 @@ export default class CabinetLayout extends Component {
   }
   render() {
     const { user, children, breadcrumbs, page, config } = this.props;
-    console.log(page);
-    const breadItems = [
-      { key: 1, icon: <DashboardIcon />, title: 'Личный кабинет', url: '/cabinet' },
-      ...breadcrumbs,
-    ];
+    const title = page.getMeta('title');
+    const description = page.getMeta('description');
+    const breadItems = (page.state.metas || []).map((meta, key) => ({
+      key,
+      title: meta.crumb && meta.crumb.title || meta.title || 'title',
+      url: meta.crumb && meta.crumb.url || meta.url || '/',
+      icon: meta.crumb && meta.crumb.icon || meta.icon// || <DashboardIcon />,
+    }));
+    // [
+    //   { key: 1, icon: <DashboardIcon />, title: 'Личный кабинет', url: '/cabinet' },
+    //   ...breadcrumbs,
+    // ];
     const mainMenus = [
       {
         icon: <DashboardIcon />,
@@ -190,21 +197,15 @@ export default class CabinetLayout extends Component {
           </If>
         </SidebarWrapper>
         <PageWrapper>
-          {/* <PageHeader title={title} description={description}>
+          <PageHeader title={title} description={description}>
             <Breadcrumb items={breadItems} />
-          </PageHeader> */}
+          </PageHeader>
           <PageContent>
             {children}
           </PageContent>
         </PageWrapper>
         <FooterWrapper>
-          <div className="pull-right hidden-xs">
-            <b>Version</b> 0.0.1
-          </div>
-          <strong>
-            <span>Copyright &copy; 2016-2017 </span>
-            <a href="http://github.com/isuvorov/lego-starter-kit">Lego-starter-kit</a>.
-          </strong> All rights reserved.
+          <div className="pull-right hidden-xs" dangerouslySetInnerHTML={{ __html: config.siteCopyright }} />
         </FooterWrapper>
       </LayoutWrapper>
     );

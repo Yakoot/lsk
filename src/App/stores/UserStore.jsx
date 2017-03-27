@@ -67,11 +67,18 @@ export default class UserStore {
     const backup = clone(this.toJS);
     const res = await this.store.api.userEdit(data);
     this.update(res.data);
-    this.store.ui.status(res.message);
-    console.log(res);
+    this.store.ui.status(res.code);
     if (res.message !== 'ok') {
       this.update(backup);
     }
+  }
+
+  @action
+  async editPassword(password) {
+    this.store.ui.status('wait');
+    const res = await this.store.api.userEdit({ password });
+    this.store.ui.status(res.code);
+    return res;
   }
 
   @computed get fullName() {
